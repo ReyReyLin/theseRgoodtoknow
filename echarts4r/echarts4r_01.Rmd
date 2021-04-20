@@ -1,0 +1,161 @@
+---
+title: "echarts4r Notebook 01"
+output: html_notebook
+---
+### 所需套件
+```{r}
+library(dplyr)     #資料清理
+library(echarts4r) #作圖
+library(stringr)   #字串處理：str_extract
+library(zoo)       #時間格式：yearmon
+```
+
+### Import Data (1): 2012-2020 普通重型機車掛牌數
+* 資料來源：交通部統計查詢網 (https://stat.motc.gov.tw/mocdb/stmain.jsp?sys=100&funid=b3301)
+* 原始下載的檔案是 .xls檔，如果發現用 read_xls 讀不進來的話，可以先用 excel 打開，另存成 .xlsx檔，就可以用 read_xlsx 打開就行了！
+```{r}
+df <- readxl::read_xlsx("scooters_101_109.xlsx", range = "A4:C112")  
+```
+
+### Import Data (2): 台灣境內 covid-19 確診數
+* 資料來源：武漢肺炎in臺灣相關整理(分流) (https://docs.google.com/spreadsheets/d/1Kp5IC5IEI2ffaOSZY1daYoi2u50bjUHJW-IgfHoEq8o/edit#gid=1173642744)
+```{r}
+id <- "1Kp5IC5IEI2ffaOSZY1daYoi2u50bjUHJW-IgfHoEq8o"  # 分流試算表 id
+gid <- "1173642744"                                   # 檢驗人數工作表 gid
+url <- paste0("https://docs.google.com/spreadsheets/d/", id,
+              "/export?gid=", gid, "&format=csv")
+```
+
+```{r}
+df_covid <- readr::read_csv(url) %>%
+  select(date = "日期", positive = "確診人數")
+```
+
+### 整理資料表 (1)：2020 普通重型機車掛牌數
+* 這邊比較麻煩的是時間欄位，原始資料的時間欄位名稱是空的，且資料格式是字串
+```{r}
+colnames(df)[1] <- "ym"  #重新命名時間欄位
+df_2020 <- df %>% 
+  mutate(total = `汽油` + `電能`,                   #合併油車與電車掛牌數
+         year = str_extract(ym, "\\d+"),            #取出年份字串
+         month = str_extract(ym, "\\d+\\w+$")) %>%  #取出月份字串
+  mutate(year = as.numeric(year) + 1911,            #取出年份數字，並改成西元
+         month = as.numeric(str_extract(month, "\\d+"))) %>%    #取出月份數字
+  mutate(time = as.yearmon(paste(year, month, sep = "-"))) %>%  #建立yearmon時間格式，e.g. Jan 2020
+  filter(year > 2019) %>%                 #只取 2020 年資料
+  mutate(month = format(time, "%b")) %>%  #將 month 欄位改為英文月份簡寫
+  select(time, month, total) %>%          #取出畫圖需要的欄位
+  arrange(time)  #確保照時間順序排好
+```
+
+### 整理資料表 (2)：2020 台灣境內 covid-19 確診數
+```{r}
+df_covid_2020 <- df_covid %>% 
+  slice(1:which(df_covid$date == "12/31")) %>%  #取到2020為止
+  mutate(date = as.Date(date, format = "%m/%d") - lubridate::years(1)) %>% #改日期格式
+  mutate(time = as.yearmon(date))
+```
+
+```{r}
+#找到NA位置，比對原始資料發現是 2/29 
+na_index <- which(is.na(df_covid_2020$time))
+df_covid_2020$date[na_index] <- as.Date("2020-02-29") 
+df_covid_2020$time[na_index] <- as.yearmon(df_covid_2020$date[na_index])
+```
+
+```{r}
+#整理成月資料
+df_covid_20 <- df_covid_2020 %>%
+  group_by(time) %>%
+  summarize(month_count = sum(positive)) %>%
+  mutate(cum_count = cumsum(month_count)) 
+```
+### 整理資料表 (3)：合併資料表
+```{r}
+df_merged <- df_2020 %>% left_join(df_covid_20, by = "time")
+```
+
+### 作圖 (1)：太簡單了bar
+```{r}
+p1 <- df_merged %>%
+  e_charts(month) %>%  #建立x軸
+  e_bar(total)         #要畫的變數
+p1
+```
+
+### 作圖 (2)：好像還少了什麼？
+設定標題、變數顯示名稱、座標名稱
+```{r}
+p2 <- df_merged %>%
+  e_charts(month) %>%  #建立x軸
+  e_bar(total, name = "普通重型機車掛牌數") %>%    #要畫的變數
+  e_title("2020 年普通重型機車掛牌數") %>% #標題
+  e_x_axis(name = "月份") %>%    #設定x軸名稱
+  e_y_axis(name = "掛牌數")      #設定y軸名稱
+p2
+```
+### 作圖 (3)：加個 line 吧？
+* e_line(`變數`) 畫出折線圖
+* 用 y_index 設定第二個 y 座標軸，下圖可以看到多了右邊的縱軸
+* 同理，可以用 e_y_axis 的 index argument 設定第二個 y 座標名稱
+```{r}
+p3 <- df_merged %>%
+  e_charts(month) %>%  #建立x軸
+  e_bar(total, name = "普通重型機車掛牌數") %>%    #要畫的變數
+  e_line(month_count, name = "每月確診數", y_index = 1) %>%
+  e_line(cum_count, name = "累積確診數", y_index = 1) %>%
+  e_title("2020 年機車掛牌數與 covid-19 確診數") %>% #標題
+  e_x_axis(name = "月份") %>%    #設定x軸名稱
+  e_y_axis(name = "掛牌數") %>%  #設定y軸名稱
+  e_y_axis(name = "確診人數", index = 1)
+p3
+```
+
+### 作圖 (4)：設定圖表大小、主題、標題、座標名稱、圖例
+```{r}
+p4 <- df_merged %>%
+  e_charts(month, width = 1040, height = 585) %>%  #建立x軸
+  e_bar(total, name = "普通重型機車掛牌數") %>%    #要畫的變數
+  e_line(month_count, name = "每月確診數", y_index = 1, smooth = T) %>%  #做人要圓滑
+  e_line(cum_count, name = "累積確診數", y_index = 1, smooth = T) %>%    #畫線也是
+  e_title("2020 年機車掛牌數與 covid-19 確診數", left = "center") %>%    #標題
+  e_x_axis(name = "月份") %>%    #設定x軸名稱
+  e_y_axis(name = "掛牌數") %>%  #設定y軸名稱
+  e_y_axis(name = "確診人數", index = 1, axisLabel = list(showMinLabel = F)) %>%
+  e_theme("chalk") %>%      #設定主題
+  e_legend(top = "bottom")  #圖例下去
+p4
+```
+
+### 作圖 (5)：還覺得不夠fancy？送你互動提示框啦（e_tooltip）
+```{r}
+p5 <- df_merged %>%
+  e_charts(month, width = 1040, height = 585) %>%  
+  e_bar(total, name = "普通重型機車掛牌數") %>%    
+  e_line(month_count, name = "每月確診數", y_index = 1, smooth = T) %>% 
+  e_line(cum_count, name = "累積確診數", y_index = 1, smooth = T) %>%   
+  e_title("2020 年機車掛牌數與 covid-19 確診數", left = "center") %>% 
+  e_x_axis(name = "月份") %>%    
+  e_y_axis(name = "掛牌數") %>%  
+  e_y_axis(name = "確診人數", index = 1, axisLabel = list(showMinLabel = F)) %>%
+  e_theme("chalk") %>%      
+  e_legend(top = "bottom") %>%  
+  e_tooltip(trigger = "axis") %>%  #互動式提示框，trigger 有兩個選擇："axis"或"item"
+  e_toolbox() %>%
+  e_toolbox_feature()
+p5
+```
+
+```{r}
+filePath <- "/Users/rey/MyBlog/DataAnalytics/R/001_scootersXcovid19/plots/"
+```
+
+```{r}
+htmlwidgets::saveWidget(p1, file = paste0(filePath, "p1.html"))
+htmlwidgets::saveWidget(p2, file = paste0(filePath, "p2.html"))
+htmlwidgets::saveWidget(p3, file = paste0(filePath, "p3.html"))
+htmlwidgets::saveWidget(p4, file = paste0(filePath, "p4.html"))
+htmlwidgets::saveWidget(p5, file = paste0(filePath, "p5.html"))
+```
+
+

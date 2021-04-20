@@ -1,0 +1,143 @@
+---
+title: "echarts4r (1)"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+library(dplyr)
+library(readxl)
+library(readr)
+library(echarts4r) 
+library(stringr)   #字串處理
+library(zoo)       #年-月時間序列格式
+library(tidyr)     
+```
+
+```{r}
+#https://stat.motc.gov.tw/mocdb/stmain.jsp?sys=100&funid=b3301
+df <- read_xlsx("scooters_101_109.xlsx", range = "A4:C112")
+```
+
+```{r}
+colnames(df)[1] <- "民國年月"
+df <- df %>% 
+  mutate(`合計` = `汽油` + `電能`,
+         year = str_extract(`民國年月`, "\\d+"),
+         month = str_extract(`民國年月`, "\\d+\\w+$")) %>%
+  mutate(year = as.numeric(year) + 1911,
+         month = as.numeric(str_extract(month, "\\d+"))) %>%
+  mutate(time = as.yearmon(paste(year, month, sep = "-"))) 
+```
+
+```{r}
+df_since2016 <- df %>% 
+  select(-1) %>%
+  filter(year > 2015) %>%
+  mutate(`電動車佔比` = round( 100 * (`電能` / `合計`), 2),
+         date = as.Date(time)) %>%
+  select(time, date, `汽油`, `電能`) %>%
+  gather(type, count, -date, -time) %>%
+  arrange(date, type)
+```
+
+```{r}
+df_2020 <- df %>%
+  filter(year > 2019) %>%
+  mutate(date = as.Date(time, frac = 1),
+         month = format(time, "%b")) %>%
+  select(time, date, month, gas = `汽油`, elec = `電能`, total = `合計`) %>%
+  #gather(type, count, -date, -month) %>%
+  arrange(date)
+  
+```
+
+```{r}
+chart_2020 <- df_2020 %>%
+  e_charts(month) %>%
+  e_theme("macarons") %>%
+  e_line(total) %>%
+  e_legend(show = F) %>%
+  e_x_axis(axisLabel = list(interval = 0)) %>%
+  e_tooltip(trigger = "axis") 
+chart_2020
+```
+
+## Import covid-19 確診數資料
+```{r}
+#url: https://docs.google.com/spreadsheets/d/1Kp5IC5IEI2ffaOSZY1daYoi2u50bjUHJW-IgfHoEq8o/edit#gid=1173642744
+
+id <- "1Kp5IC5IEI2ffaOSZY1daYoi2u50bjUHJW-IgfHoEq8o"  # 分流試算表 id
+gid <- "1173642744"                                   # 檢驗人數工作表 gid
+url <- paste0("https://docs.google.com/spreadsheets/d/", id,
+              "/export?gid=", gid, "&format=csv")
+```
+
+```{r}
+df_covid <- read_csv(url) %>%
+  select(date = "日期", positive = "確診人數")
+df_covid %>% head()
+```
+
+```{r}
+df_covid_2020 <- df_covid %>% 
+  slice(1:which(df_covid$date == "12/31")) %>%  #取到2020為止
+  mutate(date = as.Date(date, format = "%m/%d") - lubridate::years(1)) #改日期格式
+```
+
+```{r}
+df_covid_2020_byMon <- df_covid_2020 %>% 
+  mutate(time = as.yearmon(date)) %>%
+  group_by(time) %>%
+  summarize(month_count = sum(positive)) %>%
+  mutate(cum_count = cumsum(month_count)) 
+  ### 2/29 的date == NA
+```
+
+```{r}
+df_2020_merged <- df_2020 %>% left_join(df_covid_2020_byMon, by = "time")
+```
+
+```{r}
+chart_2020 <- df_2020_merged %>%
+  e_charts(month) %>%
+  e_theme("macarons") %>%
+  e_bar(total, name = "普通重型機車掛牌數") %>%
+  e_line(month_count, y_index = 1, name = "每月確診數") %>%
+  e_line(cum_count, y_index = 1, name = "累積確診數") %>%
+  #e_legend(show = F) %>%
+  e_x_axis(axisLabel = list(interval = 0)) %>%
+  e_tooltip(trigger = "axis") 
+chart_2020
+```
+
+```{r}
+df_2020_long <- df %>% 
+  mutate(gas = `汽油`, 
+         elec = `電能`,
+         year = str_extract(ym, "\\d+"),            #取出年份字串
+         month = str_extract(ym, "\\d+\\w+$")) %>%  #取出月份字串
+  mutate(year = as.numeric(year) + 1911,            #取出年份數字，並改成西元
+         month = as.numeric(str_extract(month, "\\d+"))) %>%    #取出月份數字
+  mutate(time = as.yearmon(paste(year, month, sep = "-"))) %>%  #建立yearmon時間格式，e.g. Jan 2020
+  filter(year > 2019) %>%                 #只取 2020 年資料
+  mutate(month = format(time, "%b")) %>%  #將 month 欄位改為英文月份簡寫
+  select(time, month, gas, elec) %>%          #取出畫圖需要的欄位
+  tidyr::gather(type, count, -time, -month) %>%
+  arrange(time, type)  #確保照時間順序排好
+```
+
+```{r}
+df_2020_long %>%
+  group_by(type) %>%
+  e_charts(month, width = 1000, height = 600) %>%      #建立x軸、設定圖表大小
+  e_line(count, smooth = T) %>%  #做人要圓滑，畫線也是
+  e_title("2020 年普通重型機車掛牌數", left = 'center') %>%  #標題置中
+  e_x_axis(name = "月份") %>%    #設定x軸名稱
+  e_y_axis(name = "掛牌數") %>%  #設定y軸名稱
+  e_theme("macarons") %>%        #設定主題，今晚我想來點...馬卡龍！
+  e_legend(show = T, top = 'bottom') %>%  #圖例放下面
+  e_tooltip(trigger = "axis")             #互動式提示框
+```

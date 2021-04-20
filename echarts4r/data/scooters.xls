@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" >
+<html>
+<head>
+<link rel="shortcut icon" href="http://gotac.myweb.hinet.net/gotac.ico" >
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
+<!-- 系統開發:金諄資訊股份有限公司 (02) 2759-6506 -->
+
+
+<title>機動車輛新增掛牌車輛數按使用燃料別分查詢結果網頁</title>
+<style type="text/css">
+<!--
+body {
+	background-color: #FFFFCC;
+}
+body,td,th {
+	font-size: smaller;
+	color: #000066;
+}
+
+a:active {
+	text-decoration: none;
+}
+a:link {
+	color: #000066;
+	text-decoration: none;
+}
+a:visited {
+	text-decoration: none;
+	color: #330066;
+}
+a:hover {
+	text-decoration: underline;
+}
+ 
+th,.stycode {
+	background-color: #DFFFFF;
+	font-weight: lighter;
+	color: #000066;
+	}
+.stytitle {
+	font-weight: bold;
+	color: #000066;
+	background-color: #B9B9FF;
+}
+.stydata {
+	background-color: #FFFFEC;
+	color: #0000CC;
+	background-position: center center;
+}
+.styremark {
+	color:#660000;
+}
+.stytable {
+	background-color: #E6FFFF;
+	background-position: center center;
+}
+
+.headcls {
+	font-size: 16;
+	color: #000066;
+	font-weight: bold;
+}
+.msgcls {
+	color: #990033;
+}
+.desccls {
+	color: #000099;
+}
+ .timecls {
+	color:#660000;
+	font-size: 10;
+        text-align: right;
+}
+ .tblcls {
+     margin-left:15px;
+}
+.{
+	background-color: #FFDFFF;
+}
+.{
+	background-color: #FFFFCA;
+}
+.styspc {
+	background-color: #FFCCFF;
+}
+-->
+</style>
+
+<script language="JavaScript" src="stcom.js"></script>
+<script language="JavaScript">
+function openWindow(ltype,lsysid, lparm,ldframe,ldposx,ldposy,ldheight,ldwidth){
+}
+</script>
+
+</head>
+
+<body  onLoad="MM_preloadImages('prvbtn.gif','prvbtn_f2.gif')" tracingsrc="imageback1.gif" tracingopacity="10">
+<form   name="form1">
+
+<table summary='查詢結果網頁表格資料'  width="100%" height="55" border="0">
+  <tr align="center" valign="middle"  >
+    <td width="20%">單位：輛</td>        
+    <td width="60%" class="headcls" colspan=6 >機動車輛新增掛牌車輛數按使用燃料別分</td>        
+    <td>表格數：1</td>        
+    <td><input name="print" type="button" value="列印" onClick="javascript:window.print();"></td>        
+	
+
+  </tr>
+  <tr><td height="15" colspan=9 background="imageline2.gif">&nbsp;</td>        
+  </tr>
+</table>
+
+ <table summary='統計資料庫查詢結果網頁表格資料'  border="1" cellpadding="1" cellspacing="1" class="tblcls">
+
+    <tr ><th width="80"  align="center" valign="middle" scope="col" class="stytitle">　　　　</th>
+
+ <th  width="0" nowrap colspan=3 align="center" scope="col" class="stytitle">普通重型</th>       
+    </tr>
+
+    <tr ><th width="80"  align="center" valign="middle" scope="col" class="stytitle">&nbsp;&nbsp;　　　　</th>
+
+ <th  width="64"  align="center" scope="col" class="stytitle">能源別總計</th>     <th  width="64"  align="center" scope="col" class="stytitle">汽油</th>     <th  width="64"  align="center" scope="col" class="stytitle">電能</th>       
+    </tr>
+
+
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年</th>
+  <td class="stydata" align="right"   nowrap> 993,972 </td>         <td class="stydata" align="right"   nowrap> 914,063 </td>         <td class="stydata" align="right"   nowrap> 79,891 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 1月</th>
+  <td class="stydata" align="right"   nowrap> 44,714 </td>         <td class="stydata" align="right"   nowrap> 42,922 </td>         <td class="stydata" align="right"   nowrap> 1,786 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 2月</th>
+  <td class="stydata" align="right"   nowrap> 63,209 </td>         <td class="stydata" align="right"   nowrap> 56,986 </td>         <td class="stydata" align="right"   nowrap> 6,221 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 3月</th>
+  <td class="stydata" align="right"   nowrap> 71,357 </td>         <td class="stydata" align="right"   nowrap> 62,454 </td>         <td class="stydata" align="right"   nowrap> 8,900 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 4月</th>
+  <td class="stydata" align="right"   nowrap> 63,253 </td>         <td class="stydata" align="right"   nowrap> 55,642 </td>         <td class="stydata" align="right"   nowrap> 7,611 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 5月</th>
+  <td class="stydata" align="right"   nowrap> 66,276 </td>         <td class="stydata" align="right"   nowrap> 60,976 </td>         <td class="stydata" align="right"   nowrap> 5,300 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 6月</th>
+  <td class="stydata" align="right"   nowrap> 76,742 </td>         <td class="stydata" align="right"   nowrap> 71,025 </td>         <td class="stydata" align="right"   nowrap> 5,714 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 7月</th>
+  <td class="stydata" align="right"   nowrap> 91,970 </td>         <td class="stydata" align="right"   nowrap> 83,871 </td>         <td class="stydata" align="right"   nowrap> 8,099 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 8月</th>
+  <td class="stydata" align="right"   nowrap> 80,672 </td>         <td class="stydata" align="right"   nowrap> 74,202 </td>         <td class="stydata" align="right"   nowrap> 6,470 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 9月</th>
+  <td class="stydata" align="right"   nowrap> 99,117 </td>         <td class="stydata" align="right"   nowrap> 91,190 </td>         <td class="stydata" align="right"   nowrap> 7,927 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 10月</th>
+  <td class="stydata" align="right"   nowrap> 93,729 </td>         <td class="stydata" align="right"   nowrap> 87,122 </td>         <td class="stydata" align="right"   nowrap> 6,606 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 11月</th>
+  <td class="stydata" align="right"   nowrap> 105,363 </td>         <td class="stydata" align="right"   nowrap> 98,194 </td>         <td class="stydata" align="right"   nowrap> 7,167 </td>        
+   </tr>
+   
+   <tr>
+   <th class="stycode"   align="left" scope="row" nowrap>109年 12月</th>
+  <td class="stydata" align="right"   nowrap> 137,570 </td>         <td class="stydata" align="right"   nowrap> 129,479 </td>         <td class="stydata" align="right"   nowrap> 8,090 </td>        
+   </tr>
+   
+ </table>
+
+ <div class="timecls">產生時間:110/04/10 16:01:13</div>  
+ <desc><span class="desccls"><b>說明：</b><br>
+1.本表所列數字以各月(年)期間新領之統一牌照車輛為限，軍車及未領牌照車輛均不在統計之內；亦不包括臨時牌照<br>　車輛。<br>
+2.機動車輛新增掛牌車輛數按燃料別分統計數自101年1月開始列示。<br>
+3.使用燃料別分類定義如下：<br> 
+(1)「汽油」：車輛僅使用汽油為燃料。<br>
+(2)「柴油」：車輛僅使用柴油為燃料。<br>
+(3)「電能」：車輛僅以電能驅動者。<br>
+(4)「液化石油氣」：車輛僅使用液化石油氣為燃料。<br>
+(5)「汽油、LPG」：車輛同時使用「汽油」及「液化石油氣LPG」，且主要驅動方式為汽油。<br>
+(6)「汽油、電能」：車輛同時使用「汽油」及「電能」，且主要驅動方式為汽油。<br>
+(7)「柴油、電能」：車輛同時使用「柴油」及「電能」，且主要驅動方式為柴油。<br>
+(8)「電能、汽油」：車輛同時使用「汽油」及「電能」，且行駛主要為電能馬達驅動者。<br>
+(9)「電能、柴油」：車輛同時使用「柴油」及「電能」，且行駛主要為電能馬達驅動者。<br>
+(10)「電能(增程)」：車輛主要為電能馬達驅動，同時搭配汽油或柴油引擎驅動發電機對電池充電，<br>          以延長車輛行駛里程者。<br>
+(11)「汽油(油電)」：車輛僅使用汽油為燃料，但可由車載裝置轉換成電能供馬達驅動車輛行駛者。<br>
+(12)「柴油(油電)」：車輛僅使用柴油為燃料，但可由車載裝置轉換成電能供馬達驅動車輛行駛者。<br>
+<br>
+<b>資料來源：</b>公路總局。<br></span></desc><br> 
+ <desc><span class="msgcls"></span></desc><br> 
+ <desc><span class="desccls"><sortdesca></span></desc><br> 
+ <desc><span class="desccls"></span></desc><br> 
+  <desc><span class="msgcls">＊表中數字顏色若為暗紫色者，將游標移至該處，可出現註解說明。</span></desc><br>   
+<nolinkdata>  
+</form>  
+</body>  
+</html>  
+
+ 
+
